@@ -1,0 +1,114 @@
+BITS 32
+
+SECTION .data
+
+box1 db '========================================',0
+box2 db '        BESNICH PROTECT v1.0            ',0
+box3 db '   REAL-TIME SECURITY SYSTEM ACTIVE     ',0
+box4 db '========================================',0
+
+scan_msg db '[*] Scanning buffer...',0
+safe_msg db '[✓] SYSTEM CLEAN',0
+block_msg db '[!] THREAT DETECTED - BLOCKED',0
+
+newline db 10,0
+
+sig1 db '<script>',0
+sig2 db 'virus',0
+
+SECTION .text
+GLOBAL protect_scan
+
+protect_scan:
+
+    call clear_screen
+
+    mov esi, box1
+    call print_string
+    call print_newline
+
+    mov esi, box2
+    call print_string
+    call print_newline
+
+    mov esi, box3
+    call print_string
+    call print_newline
+
+    mov esi, box4
+    call print_string
+    call print_newline
+
+    call print_newline
+
+    mov esi, scan_msg
+    call print_string
+    call print_newline
+
+    mov esi, ebx
+    call scan_buffer
+
+    ret
+
+
+scan_buffer:
+
+.loop:
+    mov al, [esi]
+    cmp al, 0
+    je safe
+
+    cmp al, '<'
+    je suspicious
+
+    jmp next
+
+suspicious:
+
+    mov esi, block_msg
+    call print_string
+
+    mov eax, 99
+    int 0x80
+
+    ret
+
+next:
+    inc esi
+    jmp .loop
+
+safe:
+
+    call print_newline
+    mov esi, safe_msg
+    call print_string
+
+    mov eax, 100
+    int 0x80
+
+    ret
+
+
+print_string:
+.next:
+    lodsb
+    or al, al
+    jz .done
+    mov ah, 0x0E
+    int 0x10
+    jmp .next
+.done:
+    ret
+
+
+print_newline:
+    mov ah, 0x0E
+    mov al, 10
+    int 0x10
+    ret
+
+
+clear_screen:
+    mov ax, 0x0003
+    int 0x10
+    ret
