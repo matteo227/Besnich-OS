@@ -2,24 +2,18 @@
 [ORG 0x100000]
 
 desktop_start:
-    ; Passa a modalità VESA 1024x768 32bit
     mov ax, 0x4F02
     mov bx, 0x4117
     int 0x10
 
-    ; Sfondo blu scuro Besnich
     call draw_background
 
-    ; Taskbar in basso
     call draw_taskbar
 
-    ; Icone desktop
     call draw_icons
 
-    ; Ora/data
     call draw_datetime
 
-    ; Loop eventi
 desktop_loop:
     call check_mouse
     call check_keyboard
@@ -42,13 +36,11 @@ draw_taskbar:
     mov eax, 0xCC000000
     rep stosd
 
-    ; Pulsante Start Besnich
     mov dh, 43
     mov dl, 0
     mov si, start_text
     call draw_button_green
 
-    ; Icone taskbar: Wi-Fi, volume, batteria, ora
     mov dh, 43
     mov dl, 70
     mov si, wifi_icon
@@ -77,17 +69,15 @@ draw_icons:
     mov si, term_label
     call draw_label
 
-    ; Icona File Manager
     mov dh, 2
     mov dl, 8
     mov si, folder_icon
     call draw_icon
     mov dh, 10
     mov dl, 8
-    mov si, folder_label
+    mov si, fileviewer_label
     call draw_label
 
-    ; Icona Impostazioni
     mov dh, 2
     mov dl, 14
     mov si, settings_icon
@@ -97,27 +87,25 @@ draw_icons:
     mov si, settings_label
     call draw_label
 
-    ; Icona Browser
     mov dh, 2
     mov dl, 20
     mov si, browser_icon
     call draw_icon
     mov dh, 10
     mov dl, 18
-    mov si, browser_label
+    mov si, searcher_label
     call draw_label
 
-    ; Icona Scudo Sicurezza
     mov dh, 2
     mov dl, 26
     mov si, shield_icon
     call draw_icon
     mov dh, 10
     mov dl, 25
-    mov si, shield_label
+    mov si, besnich protect_label
     call draw_label
 
-    ; Icona Cestino
+
     mov dh, 2
     mov dl, 120
     mov si, trash_icon
