@@ -2,91 +2,77 @@ BITS 32
 
 SECTION .data
 
-box1 db '========================================',0
-box2 db '        BESNICH PROTECT v1.0            ',0
-box3 db '   REAL-TIME SECURITY SYSTEM ACTIVE     ',0
-box4 db '========================================',0
-
-scan_msg db '[*] Scanning buffer...',0
-safe_msg db '[✓] SYSTEM CLEAN',0
-block_msg db '[!] THREAT DETECTED - BLOCKED',0
-
-newline db 10,0
+title db 'BESNICH PROTECT REAL-TIME ACTIVE',0
+safe  db '[SAFE]',0
+block db '[BLOCKED THREAT]',0
+scan  db 'Scanning...',0
 
 sig1 db '<script>',0
 sig2 db 'virus',0
 
-SECTION .text
-GLOBAL protect_scan
+newline db 10,0
 
-protect_scan:
+SECTION .text
+GLOBAL protect_realtime
+
+protect_realtime:
 
     call clear_screen
 
-    mov esi, box1
+    mov esi, title
     call print_string
     call print_newline
 
-    mov esi, box2
-    call print_string
-    call print_newline
+main_loop:
 
-    mov esi, box3
-    call print_string
-    call print_newline
+    ; prende input/buffer globale (browser, memoria, ecc.)
+    mov esi, [watch_buffer]
 
-    mov esi, box4
-    call print_string
-    call print_newline
+    call scan_memory
 
-    call print_newline
-
-    mov esi, scan_msg
-    call print_string
-    call print_newline
-
-    mov esi, ebx
-    call scan_buffer
-
-    ret
+    jmp main_loop
 
 
-scan_buffer:
+scan_memory:
 
 .loop:
     mov al, [esi]
     cmp al, 0
-    je safe
+    je safe_state
 
     cmp al, '<'
-    je suspicious
+    je threat_detected
 
-    jmp next
+    inc esi
+    jmp .loop
 
-suspicious:
 
-    mov esi, block_msg
+threat_detected:
+
+    mov esi, block
     call print_string
+    call print_newline
 
     mov eax, 99
     int 0x80
 
-    ret
+    jmp main_loop
 
-next:
-    inc esi
-    jmp .loop
 
-safe:
+safe_state:
 
-    call print_newline
-    mov esi, safe_msg
+    mov esi, safe
     call print_string
+    call print_newline
 
     mov eax, 100
     int 0x80
 
-    ret
+    jmp main_loop
+
+
+SECTION .bss
+watch_buffer resd 1
 
 
 print_string:
