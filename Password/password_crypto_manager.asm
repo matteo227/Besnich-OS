@@ -7,6 +7,6 @@ encrypt_password:
 
     call sam_password_encrypt
     call e2e_password_encrypt
-    call ae32_password_encrypt
+    call aes256_password_encrypt
 
     ret
