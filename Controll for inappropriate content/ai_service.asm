@@ -13,6 +13,8 @@ main_loop:
     call video_analyzer
     call risk_engine
     call action_manager
+    call video_frame_scan.asm
+    call video_risk_engine.asm
 
     mov eax, 300
     int 0x80
