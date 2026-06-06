@@ -3,14 +3,12 @@ use std::{
     fs,
     path::Path,
     process::Command,
-    time::{SystemTime, UNIX_EPOCH},
 };
 
 const ANTICHEAT_PATH: &str = "C:\\BESNICH\\antijailbreaking\\";
 const SYSTEM_IMAGE: &str = "C:\\BESNICH\\recovery\\clean.img";
 const USERDATA_PATH: &str = "C:\\Users\\";
 
-// hash attesi generati dall'installer ufficiale
 const EXPECTED_HASH_DB: &[(&str, &str)] = &[
     ("kernel.bin", "a1b2c3d4..."),
     ("policy.bin", "e5f6g7h8..."),
@@ -40,7 +38,6 @@ fn verify_antijailbreaking_integrity() -> bool {
 }
 
 fn detect_tampering_signals() -> bool {
-    // segnali reali su Windows
     let suspicious_paths = [
         "C:\\Windows\\System32\\cmd.exe",
         "C:\\Windows\\Temp\\rootkit.tmp",
@@ -67,8 +64,6 @@ fn backup_user_data() {
 }
 
 fn restore_clean_system() {
-    println!("[BESNICH OS] Compromissione rilevata -> restore");
-
     backup_user_data();
 
     let _ = Command::new("besnich_recovery_tool.exe")
@@ -101,25 +96,20 @@ fn unlock_antijailbreaking() {
 }
 
 fn main() {
-    // modalità update ufficiale
     if is_update_mode() {
         unlock_antijailbreaking();
-        println!("[BESNICH OS] Update mode attivo");
         return;
     }
 
-    // controllo integrità
     if !verify_antijailbreaking_integrity() {
         restore_clean_system();
         return;
     }
 
-    // rilevamento jailbreak/tampering
     if detect_tampering_signals() {
         restore_clean_system();
         return;
     }
 
     lock_antijailbreaking();
-    println!("[BESNICH OS] Sistema protetto e integro");
 }
